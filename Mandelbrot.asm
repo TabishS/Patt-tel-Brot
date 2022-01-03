@@ -1,3 +1,6 @@
+; Ask if user knows screen width, otherwise find
+; Ask if user knows screen height, otherwise find
+
 .ORIG x3000
 START
     LEA R2, SIZECHAR
@@ -107,5 +110,14 @@ DIMCHECKMESSAGE ; Change to backspace?
     .FILL x6574
     .FILL x0A0A
     .FILL x0000
+
+M_XA
+    .FILL x0278 ; 2.47
+M_XB
+    .FILL x013C ; 1.235
+M_YA
+    .FILL x023D ; 2.24
+M_YB
+    .FILL x011E ; 1.12
 
 .END
