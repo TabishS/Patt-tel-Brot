@@ -219,6 +219,33 @@ BROTCALC
     ST R4, YSHIFT
     HALT
 
+SAVER5
+    .BLKW #1
+SAVER6
+    .BLKW #1
+
+; R1 - Frac of OP1, R2 - Int of OP1, R3 - Frac of OP2, R4 - Int of OP2
+; Results in R1 and R2
+; Also use R5 and R6
+
+MULTIPLY
+
+DIVIDE
+
+ADDADD
+    ; CONTINUE HERE - Need to check fractional parts for carry out
+    AND R5, R1, #7
+    AND R6, R3, #7
+    ADD R5, R5, R6 ; R5 has sum of three lower bits - conserve
+    AND R6, R5, #8 ; R6 checks if there is a carry-out from the three lower bits
+SUBTRACT
+
+; R1 - Frac of OP, R2 - Int of OP, R3 - # of bits to shift by
+RIGHTSHIFT
+
+RIGHTSHIFTHALF
+
+
 SCALEWIDTH ; 4.5
     .FILL x0004
     .FILL x8000
