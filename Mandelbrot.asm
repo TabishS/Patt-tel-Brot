@@ -204,9 +204,22 @@ PREBROTCALC
     .FILL x0077
 
 BROTCALC
+; Find smaller dim
+    LD R2, WIDTH
+    NOT R4, R2
+    ADD R4, R4, #1 ; R4 has negative WIDTH
+    ADD R4, R3, R4 ; R4 has HEIGHT - WIDTH
+    ; Divide R4 by 2
+    ; If WIDTH is smaller, answer will be negative, else positive
+    BRn #1
+    ; HEIGHT is smaller, add XSHIFT (Height - Width)/2
+    ST R4, XSHIFT
+    BR #1
+    ; WIDTH is smaller, add YSHIFT (Width - Height)/2
+    ST R4, YSHIFT
     HALT
 
-SCALEWIDTH
+SCALEWIDTH ; 4.5
     .FILL x0004
     .FILL x8000
 WIDTH
@@ -226,9 +239,9 @@ JSHIFTINT
 JSHIFTFRAC
     .BLKW #1
 XSHIFT
-    .BLKW #1
+    .FILL x0000
 YSHIFT
-    .BLKW #1
+    .FILL x0000
 ZOOM
     .BLKW #1
 MI
@@ -250,6 +263,20 @@ MI
 ;     .FILL x0064
 ; LEFTKEY
 ;     .FILL x0061
+NEGUPKEY
+    .FILL xFF89
+NEGDOWNKEY
+    .FILL xFF8D
+NEGZOOMOUTKEY
+    .FILL xFF91
+NEGMIMINUSKEY
+    .FILL xFF95
+NEGMIPLUSKEY
+    .FILL xFF96
+NEGZOOMINKEY
+    .FILL xFF97
+NEGRIGHTKEY
+    .FILL xFF9C
 NEGLEFTKEY
     .FILL xFF9E
 
@@ -263,3 +290,5 @@ NEGLEFTKEY
 ; R7 - JSR, temporary values
 
 .END
+
+; Add toggling between escape time and modular
