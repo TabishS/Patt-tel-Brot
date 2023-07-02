@@ -2,6 +2,47 @@
 ; Ask if user knows screen height, otherwise find
 
 .ORIG x3000
+
+TESTADD ; Testing 8-digit addition
+    LEA R3, OP1
+    LEA R4, OP2
+    LEA R5, RES
+STARTADD
+    LDR R1, R3, #0
+    LDR R2, R4, #0
+    AND R7, R7, #0
+    LD R0, TESTCARRY
+    AND R0, R0, R1
+    AND R0, R0, R2
+
+    ; Cin = R0[15]
+    BRz #1
+    ADD R7, R7, #1
+
+    ADD R1, R1, R2
+    STR R1, R5, #0
+
+    LDR R1, R3, #1
+    LDR R2, R4, #1
+
+    ADD R1, R1, R2
+    ADD R1, R1, R7
+
+    STR R1, R5, #1
+    HALT
+
+OP1
+    .FILL x1010
+    .FILL x1010
+OP2
+    .FILL x0101
+    .FILL x0101
+RES
+    .BLKW #1
+    .BLKW #1
+TESTCARRY
+    .FILL x8000
+
 START
     LEA R2, SIZECHAR
     AND R1, R1, #0 ; Indicator of width vs. height
@@ -56,6 +97,7 @@ NEGNEWLINE
 
 DIMCHECKMESSAGE ; Change to backspace?
     ; "Press space until the end of your console is reached, then hit enter. To restart, press delete\n\n"
+    ; Fix to make it clear to keep pressing space to go down, tweak or add new message
     .FILL x7250
     .FILL x7365
     .FILL x2073
