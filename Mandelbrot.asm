@@ -3,6 +3,60 @@
 
 .ORIG x3000
 
+; JSR START
+
+MULTEST ; Testing 8-bit fixed-point multiplication
+
+    ; R3 and R4 store the 32-bit fixed-point result
+    AND R3, R3, #0 ; lower 16 bits
+    AND R4, R4, #0 ; upper 16 bits
+
+    ; R5 tracks sign of result
+    AND R5, R5, #0 ;
+
+    ; R1 and R2 store the 16-bit fixed-point operands
+    LD R1, MULOP1
+    BRp #3
+    ADD R5, R5, #1
+    NOT R1, R1
+    ADD R1, R1, #1
+    LD R2, MULOP2
+    BRp #3
+    ADD R5, R5, #1
+    NOT R2, R2
+    ADD R2, R2, #1
+
+LOOPMUL
+    ADD R2, R2, #-1
+    BRn DONEMUL
+    ADD R6, R3, #0
+    ADD R3, R3, R1
+    NOT R6, R6
+    ADD R6, R6, #1
+    ADD R6, R6, R3
+    BRn OFMUL
+    BR LOOPMUL
+
+OFMUL
+    HALT
+
+DONEMUL
+    AND R5, R5, #1
+    BRz #2
+    NOT R3, R3
+    ADD R3, R3, #1
+    ST R3, MULRES_LOWER
+    HALT
+
+MULOP1
+    .FILL x7FFF
+MULOP2
+    .FILL x0004
+MULRES_UPPER
+    .BLKW #1
+MULRES_LOWER
+    .BLKW #1
+
 TESTADD ; Testing 8-digit addition
     LEA R3, OP1
     LEA R4, OP2
@@ -38,8 +92,7 @@ OP2
     .FILL x0101
     .FILL x0101
 RES
-    .BLKW #1
-    .BLKW #1
+    .BLKW #2
 TESTCARRY
     .FILL x8000
 
@@ -87,7 +140,7 @@ HEIGHTFOUND
 FIRSTCHAR
     .FILL x004F ; 'O'
 SIZECHAR
-    .FILL x002D ; "-\0"
+    .FILL x0040 ; "-\0"
     .FILL x0A7C ; "|\n"
     .FILL x0000 ; "\0"
 NEWLINE
@@ -253,13 +306,14 @@ BROTCALC
     ADD R4, R3, R4 ; R4 has HEIGHT - WIDTH
     ; Divide R4 by 2
     ; If WIDTH is smaller, answer will be negative, else positive
-    BRn #1
+    BRn #2
     ; HEIGHT is smaller, add XSHIFT (Height - Width)/2
     ST R4, XSHIFT
     BR #1
     ; WIDTH is smaller, add YSHIFT (Width - Height)/2
     ST R4, YSHIFT
     HALT
+; CHECK WHICH WIDTH IS NONZERO LATER
 
 SAVER5
     .BLKW #1
@@ -289,26 +343,19 @@ RIGHTSHIFTHALF
 
 
 SCALEWIDTH ; 4.5
-    .FILL x0004
-    .FILL x8000
+    .FILL x0
 WIDTH
     .BLKW #1
 HEIGHT
     .BLKW #1
-SMALLERDIMINT
+SMALLERDIM
     .BLKW #1
-SMALLDERDIMFRAC
+ISHIFT
     .BLKW #1
-ISHIFTINT
-    .BLKW #1
-ISHIFTFRAC
-    .BLKW #1
-JSHIFTINT
-    .BLKW #1
-JSHIFTFRAC
+JSHIFT
     .BLKW #1
 XSHIFT
-    .FILL x0000
+    .FILL x0000 ; initialize if desired
 YSHIFT
     .FILL x0000
 ZOOM
